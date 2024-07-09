@@ -3,10 +3,10 @@ package main
 import (
 	"bytes"
 	"fmt"
-	"text/template"
 	"os"
 	"path/filepath"
 	"strings"
+	"text/template"
 )
 
 type Data struct {
@@ -16,7 +16,7 @@ type Data struct {
 	Letter    string
 	Namespace string
 	Sentence  string
-	Snake string
+	Snake     string
 }
 
 func main() {
@@ -39,8 +39,13 @@ func main() {
 	// 	"Go Template Infrastructure",
 	// 	"go_template_infrastructure",
 	// }
-	data := generateStruct("Your Service")
-
+	if len(os.Args) < 2 {
+        fmt.Println("Usage: go run main.go [serviceName]")
+        os.Exit(1)
+    }
+    serviceName := os.Args[1]
+	data := generateStruct(serviceName)
+	
 	// Remove the output directory ./output
 	err := os.RemoveAll("./output")
 	if err != nil {
@@ -51,7 +56,7 @@ func main() {
 	inputDir := "./config/template"
 	outputDir := "./output"
 	err = filepath.Walk(inputDir, func(path string, info os.FileInfo, err error) error {
-	
+
 		if !info.IsDir() {
 			// Get the relative path from the input directory
 			relPath, err := filepath.Rel(inputDir, path)
@@ -85,7 +90,7 @@ func main() {
 			if err != nil {
 				return err
 			}
-			fmt.Printf("Template output written to: %s\n", outputPath)
+			fmt.Printf("Template output written to: %s\n", outputPath_)
 		}
 
 		return nil
@@ -135,13 +140,13 @@ func generateStruct(sentence string) Data {
 	namespace := strings.ToUpper(strings.ReplaceAll(dashed, "-", "_"))
 	sentence = strings.Join(words, " ")
 	snake := strings.ReplaceAll(dashed, "-", "_")
-	return Data {
+	return Data{
 		Camel:     camel,
 		CapsCamel: capsCamel,
 		Dashed:    dashed,
 		Letter:    letter,
 		Namespace: namespace,
 		Sentence:  sentence,
-		Snake: snake,
+		Snake:     snake,
 	}
 }
