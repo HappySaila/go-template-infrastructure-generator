@@ -20,7 +20,6 @@ type Data struct {
 }
 
 func main() {
-
 	// Define data to pass to template (you can replace this with your own data)
 	// data := struct {
 	// 	Camel     string
@@ -124,29 +123,39 @@ func cleanFileName(filePath string) string {
 }
 
 func generateStruct(sentence string) Data {
-
-	// Get values and return struct
 	words := strings.Fields(sentence)
-	camel := strings.ToLower(words[0])
-	for _, word := range words[1:] {
-		camel += strings.Title(word)
+	if len(words) == 0 {
+		return Data{}
 	}
-	capsCamel := strings.Title(camel)
-	dashed := strings.ToLower(strings.Join(words, "-"))
-	letter := strings.ToLower(string(words[0][0]))
-	for _, word := range words[1:] {
-		letter += strings.ToLower(string(word[0]))
+	lowered := make([]string, len(words))
+	for i, w := range words {
+		lowered[i] = strings.ToLower(w)
 	}
-	namespace := strings.ToUpper(strings.ReplaceAll(dashed, "-", "_"))
-	sentence = strings.Join(words, " ")
-	snake := strings.ReplaceAll(dashed, "-", "_")
+	camel := lowered[0]
+	for _, word := range lowered[1:] {
+		camel += strings.ToUpper(word[:1]) + word[1:]
+	}
+	capsCamel := ""
+	for _, word := range lowered {
+		capsCamel += strings.ToUpper(word[:1]) + word[1:]
+	}
+	dashed := strings.Join(lowered, "-")
+	letter := ""
+	for _, word := range lowered {
+		if len(word) > 0 {
+			letter += string(word[0])
+		}
+	}
+	namespace := strings.ToUpper(strings.Join(lowered, "_"))
+	sentenceOut := strings.Join(words, " ")
+	snake := strings.Join(lowered, "_")
 	return Data{
 		Camel:     camel,
 		CapsCamel: capsCamel,
 		Dashed:    dashed,
 		Letter:    letter,
 		Namespace: namespace,
-		Sentence:  sentence,
+		Sentence:  sentenceOut,
 		Snake:     snake,
 	}
 }
